@@ -1,0 +1,16 @@
+aws_region       = "us-east-1"
+environment      = "production"
+vpc_cidr         = "10.0.0.0/16"
+app_port         = 8080
+instance_type    = "t3.medium"
+min_size         = 2
+max_size         = 6
+desired_capacity = 2
+health_check_path = "/health"
+mongodb_uri      = "mongodb+srv://user:pass@cluster.mongodb.net/starttech?retryWrites=true&w=majority"
+redis_password   = "your-secure-redis-password"
+redis_node_type  = "cache.t3.micro"
+log_retention_days = 30
+domain_name      = "starttech.example.com"
+certificate_arn  = "arn:aws:acm:us-east-1:123456789012:certificate/xxxxx"
+ecr_repository_url = "123456789012.dkr.ecr.us-east-1.amazonaws.com/starttech-backend"
