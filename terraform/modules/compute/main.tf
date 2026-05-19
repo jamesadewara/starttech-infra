@@ -141,7 +141,7 @@ resource "aws_launch_template" "app" {
 
   vpc_security_group_ids = [aws_security_group.ec2.id]
 
-  user_data = base64encode(templatefile("${path.module}/user-data.sh", {
+  user_data = base64encode(templatefile("${path.module}/../../../scripts/user-data.sh", {
     app_port         = var.app_port
     mongodb_uri      = var.mongodb_uri
     redis_host       = var.redis_host

@@ -73,11 +73,13 @@ docker run -d \
   --restart always \
   -p ${app_port}:${app_port} \
   -e PORT=${app_port} \
-  -e MONGODB_URI="${mongodb_uri}" \
-  -e REDIS_HOST="${redis_host}" \
+  -e MONGO_URI="${mongodb_uri}" \
+  -e REDIS_ADDR="${redis_host}" \
   -e REDIS_PASSWORD="${redis_password}" \
   -e ENVIRONMENT=${environment} \
   -e AWS_REGION=${aws_region} \
+  -e DB_NAME="much_todo_db" \
+  -e ENABLE_CACHE="true" \
   -v /var/log/starttech:/app/logs \
   ${ecr_repository_url}:latest
 

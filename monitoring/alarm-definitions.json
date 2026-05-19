@@ -1,0 +1,65 @@
+[
+  {
+    "AlarmName": "starttech-production-alb-5xx",
+    "AlarmDescription": "ALB 5xx errors exceeded threshold",
+    "Namespace": "AWS/ApplicationELB",
+    "MetricName": "HTTPCode_Target_5XX_Count",
+    "Statistic": "Sum",
+    "ComparisonOperator": "GreaterThanThreshold",
+    "Threshold": 10.0,
+    "EvaluationPeriods": 2,
+    "Period": 60,
+    "Dimensions": [
+      {
+        "Name": "LoadBalancer",
+        "Value": "alb-arn-suffix"
+      }
+    ],
+    "ActionsEnabled": true,
+    "AlarmActions": [
+      "arn:aws:sns:us-east-1:123456789012:starttech-production-alerts"
+    ]
+  },
+  {
+    "AlarmName": "starttech-production-alb-latency",
+    "AlarmDescription": "ALB latency exceeded 2 seconds",
+    "Namespace": "AWS/ApplicationELB",
+    "MetricName": "TargetResponseTime",
+    "Statistic": "Average",
+    "ComparisonOperator": "GreaterThanThreshold",
+    "Threshold": 2.0,
+    "EvaluationPeriods": 3,
+    "Period": 60,
+    "Dimensions": [
+      {
+        "Name": "LoadBalancer",
+        "Value": "alb-arn-suffix"
+      }
+    ],
+    "ActionsEnabled": true,
+    "AlarmActions": [
+      "arn:aws:sns:us-east-1:123456789012:starttech-production-alerts"
+    ]
+  },
+  {
+    "AlarmName": "starttech-production-asg-high-cpu",
+    "AlarmDescription": "ASG CPU utilization high",
+    "Namespace": "AWS/EC2",
+    "MetricName": "CPUUtilization",
+    "Statistic": "Average",
+    "ComparisonOperator": "GreaterThanThreshold",
+    "Threshold": 80.0,
+    "EvaluationPeriods": 2,
+    "Period": 120,
+    "Dimensions": [
+      {
+        "Name": "AutoScalingGroupName",
+        "Value": "starttech-production-asg"
+      }
+    ],
+    "ActionsEnabled": true,
+    "AlarmActions": [
+      "arn:aws:sns:us-east-1:123456789012:starttech-production-alerts"
+    ]
+  }
+]

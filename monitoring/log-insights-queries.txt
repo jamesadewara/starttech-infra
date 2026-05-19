@@ -1,0 +1,31 @@
+# CloudWatch Logs Insights Queries for StartTech Application
+
+# Query 1: Top 20 Slowest Requests
+# Purpose: Identify slow-running API endpoints and their processing durations.
+fields @timestamp, @message
+| filter @message like /duration/
+| parse @message "* duration=*" as request, duration
+| sort duration desc
+| limit 20
+
+# Query 2: Error and Panic Rate Over Time (1-hour bins)
+# Purpose: Track backend exceptions, errors, and system panics.
+fields @timestamp, @message
+| filter @message like /error/ or @message like /panic/
+| stats count() by bin(1h)
+| sort @timestamp desc
+
+# Query 3: Request Count grouped by HTTP Status Code
+# Purpose: Monitor response codes distribution to track client errors (4xx) and server errors (5xx).
+fields @timestamp, @message
+| filter @message like /status=/
+| parse @message "status=* " as status_code
+| stats count() by status_code
+| sort count() desc
+
+# Query 4: API Request Latency Percentiles (p50, p90, p99)
+# Purpose: Measure overall application response times SLA quality.
+fields @timestamp, @message
+| filter @message like /duration/
+| parse @message "duration=*" as duration
+| stats pct(duration, 50) as p50, pct(duration, 90) as p90, pct(duration, 99) as p99 by bin(5m)
