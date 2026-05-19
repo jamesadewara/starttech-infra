@@ -45,7 +45,7 @@ jobs:
         working-directory: ${{ env.TF_WORKING_DIR }}
 
       - name: Terraform Init
-        run: terraform init
+        run: terraform init -backend-config="bucket=${{ secrets.TF_STATE_BUCKET }}"
         working-directory: ${{ env.TF_WORKING_DIR }}
 
       - name: Terraform Validate
@@ -103,7 +103,7 @@ jobs:
           terraform_version: "1.7.0"
 
       - name: Terraform Init
-        run: terraform init
+        run: terraform init -backend-config="bucket=${{ secrets.TF_STATE_BUCKET }}"
         working-directory: ${{ env.TF_WORKING_DIR }}
 
       - name: Terraform Apply

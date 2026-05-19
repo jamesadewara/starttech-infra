@@ -10,6 +10,7 @@ TF_DIR="$SCRIPT_DIR/../terraform"
 usage() {
   echo "Usage: $0 [options]"
   echo "Options:"
+  echo "  -b, --bucket NAME  S3 state bucket name (required for clean runs)"
   echo "  -d, --dry-run      Run terraform plan only (do not apply changes)"
   echo "  -y, --yes          Auto-approve terraform apply (bypass prompt)"
   echo "  -h, --help         Show this help message"
@@ -18,10 +19,12 @@ usage() {
 
 DRY_RUN=false
 AUTO_APPROVE=""
+STATE_BUCKET="${TF_STATE_BUCKET}"
 
 # Parse flags
 while [[ "$#" -gt 0 ]]; do
   case "$1" in
+    -b|--bucket) STATE_BUCKET="$2"; shift 2 ;;
     -d|--dry-run) DRY_RUN=true; shift ;;
     -y|--yes) AUTO_APPROVE="-auto-approve"; shift ;;
     -h|--help) usage ;;
@@ -54,7 +57,18 @@ terraform fmt -check
 
 # Initialize backend
 echo "Initializing Terraform..."
-terraform init
+if [ -n "$STATE_BUCKET" ]; then
+  echo "Using state bucket: $STATE_BUCKET"
+  terraform init -backend-config="bucket=$STATE_BUCKET"
+else
+  if [ -d ".terraform" ]; then
+    echo "Using existing initialized backend..."
+    terraform init
+  else
+    echo "Error: S3 state bucket must be provided using the -b/--bucket flag or the TF_STATE_BUCKET environment variable."
+    exit 1
+  fi
+fi
 
 # Validate syntax
 echo "Validating configuration..."
