@@ -60,7 +60,7 @@ module "compute" {
   desired_capacity     = var.desired_capacity
   health_check_path    = var.health_check_path
   mongodb_uri          = var.mongodb_uri
-  redis_host           = module.monitoring.redis_endpoint
+  redis_host           = "${module.monitoring.redis_endpoint}:6379"
   redis_password       = var.redis_password
   ecr_repository_url   = var.ecr_repository_url
   aws_region           = var.aws_region
@@ -81,11 +81,12 @@ module "storage" {
 module "monitoring" {
   source = "./modules/monitoring"
 
-  environment        = var.environment
-  vpc_id             = module.networking.vpc_id
-  private_subnet_ids = module.networking.private_subnet_ids
-  redis_node_type    = var.redis_node_type
-  log_retention_days = var.log_retention_days
-  asg_name           = module.compute.asg_name
-  alb_arn_suffix     = module.compute.alb_arn_suffix
+  environment           = var.environment
+  vpc_id                = module.networking.vpc_id
+  private_subnet_ids    = module.networking.private_subnet_ids
+  redis_node_type       = var.redis_node_type
+  log_retention_days    = var.log_retention_days
+  asg_name              = module.compute.asg_name
+  alb_arn_suffix        = module.compute.alb_arn_suffix
+  ec2_security_group_id = module.compute.ec2_security_group_id
 }

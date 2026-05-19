@@ -7,7 +7,7 @@ resource "aws_security_group" "redis" {
     from_port       = 6379
     to_port         = 6379
     protocol        = "tcp"
-    security_groups = [aws_security_group.ec2_access.id]
+    security_groups = [var.ec2_security_group_id]
   }
 
   egress {
@@ -23,22 +23,6 @@ resource "aws_security_group" "redis" {
 
   lifecycle {
     create_before_destroy = true
-  }
-}
-
-resource "aws_security_group" "ec2_access" {
-  name_prefix = "starttech-ec2-redis-"
-  vpc_id      = var.vpc_id
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = {
-    Name = "starttech-${var.environment}-ec2-redis-sg"
   }
 }
 
