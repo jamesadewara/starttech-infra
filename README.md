@@ -47,7 +47,14 @@ Before running the Terraform deployment, you must create a secure remote S3 buck
      --versioning-configuration Status=Enabled
    ```
 2. **Create the DynamoDB Locks Table**:
-   Create a DynamoDB table named `starttech-terraform-locks` with a partition key of `LockID` (type String) to prevent state file write collisions.
+   ```bash
+   aws dynamodb create-table \
+     --table-name starttech-terraform-locks \
+     --attribute-definitions AttributeName=LockID,AttributeType=S \
+     --key-schema AttributeName=LockID,KeyType=HASH \
+     --billing-mode PAY_PER_REQUEST \
+     --region us-east-1
+   ```
 
 ---
 
@@ -63,13 +70,17 @@ To deploy the infrastructure manually from your local workspace:
    ```bash
    cp terraform.tfvars.example terraform.tfvars
    ```
-3. Edit `terraform.tfvars` with your AWS credentials, ECR repository URL, and MongoDB Atlas URI connection string:
+3. Create the ECR repository (one-time bootstrap, before first apply):
+   ```bash
+   aws ecr create-repository --repository-name starttech-production-backend --region us-east-1
+   ```
+   > **Note**: After the first `terraform apply`, Terraform will own and manage the ECR repository. You can remove this manual step on subsequent deployments.
+4. Edit `terraform.tfvars` with your secrets:
    ```hcl
    aws_region         = "us-east-1"
    environment        = "production"
    mongodb_uri        = "mongodb+srv://user:pass@cluster.mongodb.net/much_todo_db"
    redis_password     = "your-strong-auth-token-1234"
-   ecr_repository_url = "123456789012.dkr.ecr.us-east-1.amazonaws.com/starttech-backend"
    ```
 4. Run the local automated deployment helper script:
    ```bash

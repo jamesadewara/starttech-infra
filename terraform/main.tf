@@ -1,6 +1,6 @@
 terraform {
   required_version = ">= 1.7.0"
-  
+
   required_providers {
     aws = {
       source  = "hashicorp/aws"
@@ -9,10 +9,10 @@ terraform {
   }
 
   backend "s3" {
-    key            = "infrastructure/terraform.tfstate"
-    region         = "us-east-1"
+    key    = "infrastructure/terraform.tfstate"
+    region = "us-east-1"
     encrypt        = true
-    dynamodb_table = "starttech-terraform-locks"
+    use_lockfile   = true
   }
 }
 
@@ -35,6 +35,39 @@ data "aws_availability_zones" "available" {
 
 data "aws_caller_identity" "current" {}
 
+# ECR Repository (bootstrap: created once, used by the backend CI/CD pipeline)
+resource "aws_ecr_repository" "backend" {
+  name                 = "starttech-${var.environment}-backend"
+  image_tag_mutability = "MUTABLE"
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+
+  tags = {
+    Name = "starttech-backend-ecr"
+  }
+}
+
+resource "aws_ecr_lifecycle_policy" "backend" {
+  repository = aws_ecr_repository.backend.name
+
+  policy = jsonencode({
+    rules = [{
+      rulePriority = 1
+      description  = "Keep last 10 images"
+      selection = {
+        tagStatus   = "any"
+        countType   = "imageCountMoreThan"
+        countNumber = 10
+      }
+      action = {
+        type = "expire"
+      }
+    }]
+  })
+}
+
 # Networking Module
 module "networking" {
   source = "./modules/networking"
@@ -48,32 +81,30 @@ module "networking" {
 module "compute" {
   source = "./modules/compute"
 
-  environment          = var.environment
-  vpc_id               = module.networking.vpc_id
-  private_subnet_ids   = module.networking.private_subnet_ids
-  public_subnet_ids    = module.networking.public_subnet_ids
-  app_port             = var.app_port
-  instance_type        = var.instance_type
-  min_size             = var.min_size
-  max_size             = var.max_size
-  desired_capacity     = var.desired_capacity
-  health_check_path    = var.health_check_path
-  mongodb_uri          = var.mongodb_uri
-  redis_host           = "${module.monitoring.redis_endpoint}:6379"
-  redis_password       = var.redis_password
-  ecr_repository_url   = var.ecr_repository_url
-  aws_region           = var.aws_region
+  environment        = var.environment
+  vpc_id             = module.networking.vpc_id
+  private_subnet_ids = module.networking.private_subnet_ids
+  public_subnet_ids  = module.networking.public_subnet_ids
+  app_port           = var.app_port
+  instance_type      = var.instance_type
+  min_size           = var.min_size
+  max_size           = var.max_size
+  desired_capacity   = var.desired_capacity
+  health_check_path  = var.health_check_path
+  mongodb_uri        = var.mongodb_uri
+  redis_host         = "${module.monitoring.redis_endpoint}:6379"
+  redis_password     = var.redis_password
+  ecr_repository_url = aws_ecr_repository.backend.repository_url
+  aws_region         = var.aws_region
 }
 
 # Storage Module (S3, CloudFront)
 module "storage" {
   source = "./modules/storage"
 
-  environment       = var.environment
-  domain_name       = var.domain_name
-  certificate_arn   = var.certificate_arn
-  alb_dns_name      = module.compute.alb_dns_name
-  alb_zone_id       = module.compute.alb_zone_id
+  environment  = var.environment
+  alb_dns_name = module.compute.alb_dns_name
+  alb_zone_id  = module.compute.alb_zone_id
 }
 
 # Monitoring Module (CloudWatch, ElastiCache)

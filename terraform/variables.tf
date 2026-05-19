@@ -76,21 +76,4 @@ variable "log_retention_days" {
   type        = number
   default     = 30
 }
-
-variable "domain_name" {
-  description = "Domain name for CloudFront"
-  type        = string
-  default     = ""
-}
-
-variable "certificate_arn" {
-  description = "ACM certificate ARN"
-  type        = string
-  default     = ""
-}
-
-variable "ecr_repository_url" {
-  description = "ECR repository URL for backend image"
-  type        = string
-  default     = ""
-}
+

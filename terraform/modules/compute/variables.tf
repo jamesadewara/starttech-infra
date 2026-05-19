@@ -61,8 +61,3 @@ variable "ecr_repository_url" {
 variable "aws_region" {
   type = string
 }
-
-variable "certificate_arn" {
-  type    = string
-  default = ""
-}

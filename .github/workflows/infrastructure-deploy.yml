@@ -24,7 +24,7 @@ jobs:
       id-token: write
       contents: read
       pull-requests: write
-    
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -57,9 +57,17 @@ jobs:
         run: terraform plan -no-color -input=false -out=tfplan
         working-directory: ${{ env.TF_WORKING_DIR }}
         env:
+          TF_VAR_aws_region: ${{ env.AWS_REGION }}
           TF_VAR_environment: production
           TF_VAR_mongodb_uri: ${{ secrets.MONGODB_URI }}
           TF_VAR_redis_password: ${{ secrets.REDIS_PASSWORD }}
+
+      - name: Upload Terraform Plan
+        uses: actions/upload-artifact@v4
+        with:
+          name: tfplan
+          path: ${{ env.TF_WORKING_DIR }}/tfplan
+          retention-days: 1
 
       - name: Comment PR with Plan
         if: github.event_name == 'pull_request'
@@ -86,7 +94,7 @@ jobs:
     permissions:
       id-token: write
       contents: read
-    
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -106,20 +114,53 @@ jobs:
         run: terraform init -backend-config="bucket=${{ secrets.TF_STATE_BUCKET }}"
         working-directory: ${{ env.TF_WORKING_DIR }}
 
+      - name: Download Terraform Plan
+        uses: actions/download-artifact@v4
+        with:
+          name: tfplan
+          path: ${{ env.TF_WORKING_DIR }}
+
       - name: Terraform Apply
         run: terraform apply -auto-approve tfplan
         working-directory: ${{ env.TF_WORKING_DIR }}
         env:
+          TF_VAR_aws_region: ${{ env.AWS_REGION }}
           TF_VAR_environment: production
           TF_VAR_mongodb_uri: ${{ secrets.MONGODB_URI }}
           TF_VAR_redis_password: ${{ secrets.REDIS_PASSWORD }}
 
-      - name: Output Terraform Values
-        run: terraform output -json > ../terraform-outputs.json
+      - name: Export Terraform Outputs
+        id: tf-outputs
         working-directory: ${{ env.TF_WORKING_DIR }}
+        run: |
+          ALB_DNS=$(terraform output -raw alb_dns_name)
+          CF_DOMAIN=$(terraform output -raw cloudfront_domain_name)
+          CF_ID=$(terraform output -raw cloudfront_distribution_id)
+          S3_BUCKET=$(terraform output -raw s3_bucket_name)
+          ECR_URL=$(terraform output -raw ecr_repository_url)
+          ASG=$(terraform output -raw asg_name)
 
-      - name: Upload Outputs
+          echo "alb_dns_name=$ALB_DNS"               >> $GITHUB_OUTPUT
+          echo "cloudfront_domain=$CF_DOMAIN"        >> $GITHUB_OUTPUT
+          echo "cloudfront_id=$CF_ID"                >> $GITHUB_OUTPUT
+          echo "s3_bucket=$S3_BUCKET"                >> $GITHUB_OUTPUT
+          echo "ecr_url=$ECR_URL"                    >> $GITHUB_OUTPUT
+          echo "asg_name=$ASG"                       >> $GITHUB_OUTPUT
+
+      - name: Push Outputs as App-Repo Secrets
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+          APP_REPO: ${{ secrets.APP_REPO }}
+        run: |
+          gh secret set ALB_DNS_NAME           --body "${{ steps.tf-outputs.outputs.alb_dns_name }}"    --repo "$APP_REPO"
+          gh secret set CLOUDFRONT_DOMAIN      --body "${{ steps.tf-outputs.outputs.cloudfront_domain }}" --repo "$APP_REPO"
+          gh secret set CLOUDFRONT_DISTRIBUTION_ID --body "${{ steps.tf-outputs.outputs.cloudfront_id }}"  --repo "$APP_REPO"
+          gh secret set FRONTEND_S3_BUCKET     --body "${{ steps.tf-outputs.outputs.s3_bucket }}"       --repo "$APP_REPO"
+          gh secret set ECR_REPOSITORY         --body "${{ steps.tf-outputs.outputs.ecr_url }}"         --repo "$APP_REPO"
+          gh secret set ASG_NAME               --body "${{ steps.tf-outputs.outputs.asg_name }}"        --repo "$APP_REPO"
+
+      - name: Upload Outputs Artifact
         uses: actions/upload-artifact@v4
         with:
           name: terraform-outputs
-          path: terraform-outputs.json
+          path: ${{ env.TF_WORKING_DIR }}/terraform-outputs.json
