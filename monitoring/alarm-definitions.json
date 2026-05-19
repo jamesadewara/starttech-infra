@@ -1,0 +1,53 @@
+[
+  {
+    "AlarmName": "starttech-production-alb-5xx",
+    "AlarmDescription": "High 5xx error rate on ALB",
+    "MetricName": "HTTPCode_ELB_5XX_Count",
+    "Namespace": "AWS/ApplicationELB",
+    "Statistic": "Sum",
+    "Dimensions": [
+      {
+        "Name": "LoadBalancer",
+        "Value": "app/starttech-production-alb/d869024686374555"
+      }
+    ],
+    "Period": 60,
+    "EvaluationPeriods": 2,
+    "Threshold": 10,
+    "ComparisonOperator": "GreaterThanThreshold"
+  },
+  {
+    "AlarmName": "starttech-production-alb-latency",
+    "AlarmDescription": "High latency on ALB",
+    "MetricName": "TargetResponseTime",
+    "Namespace": "AWS/ApplicationELB",
+    "Statistic": "Average",
+    "Dimensions": [
+      {
+        "Name": "LoadBalancer",
+        "Value": "app/starttech-production-alb/d869024686374555"
+      }
+    ],
+    "Period": 60,
+    "EvaluationPeriods": 2,
+    "Threshold": 0.5,
+    "ComparisonOperator": "GreaterThanThreshold"
+  },
+  {
+    "AlarmName": "starttech-production-asg-high-cpu",
+    "AlarmDescription": "ASG CPU utilization high",
+    "MetricName": "CPUUtilization",
+    "Namespace": "AWS/EC2",
+    "Statistic": "Average",
+    "Dimensions": [
+      {
+        "Name": "AutoScalingGroupName",
+        "Value": "starttech-production-asg"
+      }
+    ],
+    "Period": 120,
+    "EvaluationPeriods": 2,
+    "Threshold": 80,
+    "ComparisonOperator": "GreaterThanThreshold"
+  }
+]

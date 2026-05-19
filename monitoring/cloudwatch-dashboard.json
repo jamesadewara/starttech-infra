@@ -1,0 +1,49 @@
+{
+  "widgets": [
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 0,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          ["AWS/EC2", "CPUUtilization", "AutoScalingGroupName", "starttech-production-asg"]
+        ],
+        "period": 300,
+        "stat": "Average",
+        "region": "us-east-1",
+        "title": "ASG CPU Utilization"
+      }
+    },
+    {
+      "type": "metric",
+      "x": 12,
+      "y": 0,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          ["AWS/ApplicationELB", "RequestCount", "LoadBalancer", "app/starttech-production-alb/d869024686374555"]
+        ],
+        "period": 300,
+        "stat": "Sum",
+        "region": "us-east-1",
+        "title": "ALB Request Count"
+      }
+    },
+    {
+      "type": "log",
+      "x": 0,
+      "y": 6,
+      "width": 24,
+      "height": 6,
+      "properties": {
+        "query": "SOURCE '/starttech/backend' | fields @timestamp, @message\n| sort @timestamp desc\n| limit 20",
+        "region": "us-east-1",
+        "title": "Backend Logs",
+        "stacked": false
+      }
+    }
+  ]
+}
