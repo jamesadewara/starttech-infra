@@ -142,6 +142,7 @@ resource "aws_launch_template" "app" {
     ecr_repository_url = var.ecr_repository_url
     aws_region       = var.aws_region
     environment      = var.environment
+    health_check_path = var.health_check_path
   }))
 
   tag_specifications {
