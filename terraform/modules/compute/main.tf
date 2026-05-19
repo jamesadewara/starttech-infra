@@ -135,14 +135,14 @@ resource "aws_launch_template" "app" {
   vpc_security_group_ids = [aws_security_group.ec2.id]
 
   user_data = base64encode(templatefile("${path.module}/../../../scripts/user-data.sh", {
-    app_port         = var.app_port
-    mongodb_uri      = var.mongodb_uri
-    redis_host       = var.redis_host
-    redis_password   = var.redis_password
+    app_port           = var.app_port
+    mongodb_uri        = var.mongodb_uri
+    redis_host         = var.redis_host
+    redis_password     = var.redis_password
     ecr_repository_url = var.ecr_repository_url
-    aws_region       = var.aws_region
-    environment      = var.environment
-    health_check_path = var.health_check_path
+    aws_region         = var.aws_region
+    environment        = var.environment
+    health_check_path  = var.health_check_path
   }))
 
   tag_specifications {
@@ -254,10 +254,10 @@ resource "aws_lb_listener" "http" {
 
 # Auto Scaling Group
 resource "aws_autoscaling_group" "app" {
-  name                = "starttech-${var.environment}-asg"
-  vpc_zone_identifier = var.private_subnet_ids
-  target_group_arns   = [aws_lb_target_group.app.arn]
-  health_check_type   = "ELB"
+  name                      = "starttech-${var.environment}-asg"
+  vpc_zone_identifier       = var.private_subnet_ids
+  target_group_arns         = [aws_lb_target_group.app.arn]
+  health_check_type         = "ELB"
   health_check_grace_period = 300
 
   min_size         = var.min_size
