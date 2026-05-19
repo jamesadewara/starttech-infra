@@ -42,8 +42,8 @@ Before running the Terraform deployment, you must create a secure remote S3 buck
 
 1. **Create the S3 Bucket** (Ensure bucket versioning is enabled):
    ```bash
-   aws s3 mb s3://starttech-terraform-state --region us-east-1
-   aws s3api put-bucket-versioning --bucket starttech-terraform-state \
+   aws s3 mb s3://starttech-terraform-state-james --region us-east-1
+   aws s3api put-bucket-versioning --bucket starttech-terraform-state-james \
      --versioning-configuration Status=Enabled
    ```
 2. **Create the DynamoDB Locks Table**:
