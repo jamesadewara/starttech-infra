@@ -8,7 +8,7 @@
       "height": 6,
       "properties": {
         "metrics": [
-          ["AWS/EC2", "CPUUtilization", "AutoScalingGroupName", "${ASG_NAME}"]
+          ["AWS/EC2", "CPUUtilization", "AutoScalingGroupName", "starttech-production-asg"]
         ],
         "period": 300,
         "stat": "Average",
@@ -24,7 +24,7 @@
       "height": 6,
       "properties": {
         "metrics": [
-          ["AWS/ApplicationELB", "RequestCount", "LoadBalancer", "${ALB_ARN_SUFFIX}"]
+          ["AWS/ApplicationELB", "RequestCount", "LoadBalancer", "app/starttech-production-alb/d869024686374555"]
         ],
         "period": 300,
         "stat": "Sum",

@@ -1,65 +1,53 @@
 [
   {
     "AlarmName": "starttech-production-alb-5xx",
-    "AlarmDescription": "ALB 5xx errors exceeded threshold",
+    "AlarmDescription": "High 5xx error rate on ALB",
+    "MetricName": "HTTPCode_ELB_5XX_Count",
     "Namespace": "AWS/ApplicationELB",
-    "MetricName": "HTTPCode_Target_5XX_Count",
     "Statistic": "Sum",
-    "ComparisonOperator": "GreaterThanThreshold",
-    "Threshold": 10.0,
-    "EvaluationPeriods": 2,
-    "Period": 60,
     "Dimensions": [
       {
         "Name": "LoadBalancer",
-        "Value": "alb-arn-suffix"
+        "Value": "app/starttech-production-alb/d869024686374555"
       }
     ],
-    "ActionsEnabled": true,
-    "AlarmActions": [
-      "arn:aws:sns:us-east-1:123456789012:starttech-production-alerts"
-    ]
+    "Period": 60,
+    "EvaluationPeriods": 2,
+    "Threshold": 10,
+    "ComparisonOperator": "GreaterThanThreshold"
   },
   {
     "AlarmName": "starttech-production-alb-latency",
-    "AlarmDescription": "ALB latency exceeded 2 seconds",
-    "Namespace": "AWS/ApplicationELB",
+    "AlarmDescription": "High latency on ALB",
     "MetricName": "TargetResponseTime",
+    "Namespace": "AWS/ApplicationELB",
     "Statistic": "Average",
-    "ComparisonOperator": "GreaterThanThreshold",
-    "Threshold": 2.0,
-    "EvaluationPeriods": 3,
-    "Period": 60,
     "Dimensions": [
       {
         "Name": "LoadBalancer",
-        "Value": "alb-arn-suffix"
+        "Value": "app/starttech-production-alb/d869024686374555"
       }
     ],
-    "ActionsEnabled": true,
-    "AlarmActions": [
-      "arn:aws:sns:us-east-1:123456789012:starttech-production-alerts"
-    ]
+    "Period": 60,
+    "EvaluationPeriods": 2,
+    "Threshold": 0.5,
+    "ComparisonOperator": "GreaterThanThreshold"
   },
   {
     "AlarmName": "starttech-production-asg-high-cpu",
     "AlarmDescription": "ASG CPU utilization high",
-    "Namespace": "AWS/EC2",
     "MetricName": "CPUUtilization",
+    "Namespace": "AWS/EC2",
     "Statistic": "Average",
-    "ComparisonOperator": "GreaterThanThreshold",
-    "Threshold": 80.0,
-    "EvaluationPeriods": 2,
-    "Period": 120,
     "Dimensions": [
       {
         "Name": "AutoScalingGroupName",
         "Value": "starttech-production-asg"
       }
     ],
-    "ActionsEnabled": true,
-    "AlarmActions": [
-      "arn:aws:sns:us-east-1:123456789012:starttech-production-alerts"
-    ]
+    "Period": 120,
+    "EvaluationPeriods": 2,
+    "Threshold": 80,
+    "ComparisonOperator": "GreaterThanThreshold"
   }
 ]
