@@ -60,6 +60,7 @@ locals {
 }
 
 resource "aws_cloudfront_distribution" "frontend" {
+  count               = var.enable_cloudfront ? 1 : 0
   enabled             = true
   is_ipv6_enabled     = true
   comment             = "StartTech Frontend CDN"
@@ -71,7 +72,7 @@ resource "aws_cloudfront_distribution" "frontend" {
     origin_id   = local.origin_id
 
     s3_origin_config {
-      origin_access_identity = aws_cloudfront_origin_access_identity.frontend.cloudfront_access_identity_path
+      origin_access_identity = var.enable_cloudfront ? aws_cloudfront_origin_access_identity.frontend[0].cloudfront_access_identity_path : ""
     }
   }
 
@@ -155,6 +156,7 @@ resource "aws_cloudfront_distribution" "frontend" {
 }
 
 resource "aws_cloudfront_origin_access_identity" "frontend" {
+  count   = var.enable_cloudfront ? 1 : 0
   comment = "OAI for StartTech frontend"
 }
 

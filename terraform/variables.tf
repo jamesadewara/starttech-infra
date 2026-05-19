@@ -76,3 +76,9 @@ variable "log_retention_days" {
   type        = number
   default     = 30
 }
+
+variable "enable_cloudfront" {
+  description = "Enable CloudFront distribution (set to false if account is unverified)"
+  type        = bool
+  default     = false
+}
