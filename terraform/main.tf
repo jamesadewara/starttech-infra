@@ -102,9 +102,10 @@ module "compute" {
 module "storage" {
   source = "./modules/storage"
 
-  environment  = var.environment
-  alb_dns_name = module.compute.alb_dns_name
-  alb_zone_id  = module.compute.alb_zone_id
+  environment       = var.environment
+  alb_dns_name      = module.compute.alb_dns_name
+  alb_zone_id       = module.compute.alb_zone_id
+  enable_cloudfront = var.enable_cloudfront
 }
 
 # Monitoring Module (CloudWatch, ElastiCache)

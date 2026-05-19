@@ -102,3 +102,26 @@ Defined in [infrastructure-deploy.yml](file:///c:/Users/pc/Documents/WORKSPACE/P
   2. **Security & Validation**: Executes `terraform validate` to verify configuration syntax.
   3. **Plan**: Runs `terraform plan` to display the planned infrastructure additions, changes, and destructions.
   4. **Apply (Master Branch Only)**: Integrates changes directly to production with locking mechanisms.
+
+---
+
+## 🧹 Tear Down & Cleanup
+When you are completely finished with the assessment and want to avoid any AWS charges, you must destroy the infrastructure.
+
+1. **Destroy Terraform Resources**: 
+   First, destroy all the resources managed by Terraform (including your EC2 instances, Load Balancer, Redis cache, and ECR repository):
+   ```bash
+   terraform destroy -auto-approve
+   ```
+
+2. **Delete the DynamoDB Lock Table**:
+   ```bash
+   aws dynamodb delete-table --table-name starttech-terraform-locks --region us-east-1
+   ```
+
+3. **Delete the S3 State Bucket**:
+   *Note: Because versioning is enabled, you must empty all versions of the file from the AWS Console first before the bucket can be deleted, or use the force command if there is only one version.*
+   ```bash
+   # Try forcing deletion:
+   aws s3 rb s3://starttech-terraform-state-james --force --region us-east-1
+   ```

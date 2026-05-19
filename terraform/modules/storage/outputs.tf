@@ -3,9 +3,9 @@ output "bucket_name" {
 }
 
 output "cloudfront_domain_name" {
-  value = aws_cloudfront_distribution.frontend.domain_name
+  value = var.enable_cloudfront ? aws_cloudfront_distribution.frontend[0].domain_name : aws_s3_bucket_website_configuration.frontend.website_endpoint
 }
 
 output "cloudfront_distribution_id" {
-  value = aws_cloudfront_distribution.frontend.id
+  value = var.enable_cloudfront ? aws_cloudfront_distribution.frontend[0].id : "disabled"
 }
