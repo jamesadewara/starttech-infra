@@ -9,10 +9,10 @@ terraform {
   }
 
   backend "s3" {
-    key    = "infrastructure/terraform.tfstate"
-    region = "us-east-1"
-    encrypt        = true
-    use_lockfile   = true
+    key          = "infrastructure/terraform.tfstate"
+    region       = "us-east-1"
+    encrypt      = true
+    use_lockfile = true
   }
 }
 
