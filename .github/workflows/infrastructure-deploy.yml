@@ -149,6 +149,9 @@ jobs:
           echo "s3_bucket=$S3_BUCKET"                >> $GITHUB_OUTPUT
           echo "ecr_url=$ECR_URL"                    >> $GITHUB_OUTPUT
           echo "asg_name=$ASG"                       >> $GITHUB_OUTPUT
+          
+          # Create JSON output file for artifact upload
+          terraform output -json > terraform-outputs.json
 
       - name: Push Outputs as App-Repo Secrets
         env:
