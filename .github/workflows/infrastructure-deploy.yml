@@ -142,6 +142,7 @@ jobs:
           S3_BUCKET=$(terraform output -raw s3_bucket_name)
           ECR_URL=$(terraform output -raw ecr_repository_url)
           ASG=$(terraform output -raw asg_name)
+          TG_ARN=$(terraform output -raw target_group_arn)
 
           echo "alb_dns_name=$ALB_DNS"               >> $GITHUB_OUTPUT
           echo "cloudfront_domain=$CF_DOMAIN"        >> $GITHUB_OUTPUT
@@ -149,6 +150,7 @@ jobs:
           echo "s3_bucket=$S3_BUCKET"                >> $GITHUB_OUTPUT
           echo "ecr_url=$ECR_URL"                    >> $GITHUB_OUTPUT
           echo "asg_name=$ASG"                       >> $GITHUB_OUTPUT
+          echo "target_group_arn=$TG_ARN"            >> $GITHUB_OUTPUT
           
           # Create JSON output file for artifact upload
           terraform output -json > terraform-outputs.json
@@ -164,6 +166,7 @@ jobs:
           gh secret set FRONTEND_S3_BUCKET     --body "${{ steps.tf-outputs.outputs.s3_bucket }}"       --repo "$APP_REPO"
           gh secret set ECR_REPOSITORY         --body "${{ steps.tf-outputs.outputs.ecr_url }}"         --repo "$APP_REPO"
           gh secret set ASG_NAME               --body "${{ steps.tf-outputs.outputs.asg_name }}"        --repo "$APP_REPO"
+          gh secret set TARGET_GROUP_ARN       --body "${{ steps.tf-outputs.outputs.target_group_arn }}" --repo "$APP_REPO"
 
       - name: Upload Outputs Artifact
         uses: actions/upload-artifact@v4

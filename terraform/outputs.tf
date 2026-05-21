@@ -43,3 +43,8 @@ output "cloudfront_distribution_id" {
   description = "CloudFront distribution ID (for cache invalidation)"
   value       = module.storage.cloudfront_distribution_id
 }
+
+output "target_group_arn" {
+  description = "Target Group ARN for backend"
+  value       = module.compute.target_group_arn
+}
